@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bachcare Quote Calculator (Standalone) - v1.9</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.25rem;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+    .tile{background:#f8fafc;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem}
+    .mini{font-size:.82rem;color:#64748b}
+    .hidden-soft{display:none !important}
+    .modal-overlay.hidden-soft{display:none !important}
+    .modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,.6);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:60}
+    .modal{max-width:42rem;width:100%;background:#fff;border-radius:1rem;border:1px solid #e2e8f0;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+    #notePreview{max-height:18rem;overflow:auto}
+
+    .pastebox{min-height:10rem;max-height:10rem;overflow:auto;white-space:pre-wrap}
+    .pastebox:empty:before{content:attr(data-placeholder);color:#94a3b8}
+    .pastebox table{border-collapse:collapse;width:100%}
+    .pastebox td,.pastebox th{border:1px solid #e2e8f0;padding:6px;font-size:12px}
+    .pastebox th{background:#f1f5f9;font-weight:600}
+    .app-disabled{opacity:.45;filter:grayscale(.15);pointer-events:none;user-select:none}
+    .app-content{position:relative}
+    .app-overlay{position:absolute;inset:0;display:none;align-items:flex-start;justify-content:center;padding-top:60px;z-index:20;background:rgba(248,250,252,.75)}
+    .app-overlay .box{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem 1.25rem;box-shadow:0 10px 25px rgba(0,0,0,.15);max-width:34rem;width:calc(100% - 2rem)}
+    .app-overlay .title{font-weight:700;font-size:1.1rem;color:#0f172a}
+    .app-overlay .sub{margin-top:.35rem;color:#475569;font-size:.92rem}
+  </style>
+</head>
+<body class="bg-gray-50">
+<div class="min-h-screen w-full max-w-6xl mx-auto p-6">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight">Quote Calculator (NZD)</h1>
+        <div class="mini mt-1">Paste Daily Modifiers once, select dates, and the calculator will price the stay automatically.</div>
+      </div>
+      <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">Version 1.7</span>
+    </div>
+
+    <div class="mb-4 flex flex-wrap items-end gap-3">
+      <label class="text-sm text-gray-700">
+        Platform
+        <select id="platform" class="ml-2 px-3 py-2 rounded-xl border border-gray-300 bg-white align-middle">
+          <option value="" selected>Select Platform</option>
+          <option value="direct|Bachcare Direct|0">Bachcare Direct</option>
+          <option value="bcom|Booking.com|0.239">Booking.com</option>
+          <option value="vrbo|VRBO|0.202">VRBO</option>
+          <option value="airbnb|Airbnb|0.255">Airbnb</option>
+        </select>
+      </label>
+
+      <label class="text-sm text-gray-700">
+        Property ID
+        <input id="pid" type="text" class="ml-2 px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="e.g. 341234">
+      </label>
+
+      <button id="reset" class="px-3 py-2 rounded-xl border border-gray-300 bg-white text-gray-700">Reset</button>
+    </div>
+
+    <div id="appContent" class="app-content">
+      <div id="platformGate" class="app-overlay">
+        <div class="box">
+          <div class="title">Select a platform to begin</div>
+          <div class="sub">Choose a platform above to unlock the calculator and generate a quote.</div>
+        </div>
+      </div>
+
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <section class="card lg:col-span-2">
+        <h2 class="text-xl font-semibold mb-3">Stay Dates</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="block">
+            <span class="text-sm font-medium text-gray-700">Check-in</span>
+            <input id="checkin" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="Select date">
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium text-gray-700">Check-out</span>
+            <input id="checkout" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="Select date">
+          </label>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="tile">
+            <div class="text-xs text-gray-500">Nights</div>
+            <div id="nights" class="text-2xl font-bold">0</div>
+            <div class="mini">Max 168 for quotes.</div>
+          </div>
+          <div class="tile">
+            <div class="text-xs text-gray-500">Booking count</div>
+            <div id="bookingCount" class="text-2xl font-bold">0</div>
+            <div class="mini">28 nights per booking.</div>
+          </div>
+          <div class="tile">
+            <div class="text-xs text-gray-500">Status</div>
+            <div id="status" class="text-2xl font-bold">Short stay</div>
+            <div id="statusHint" class="mini">No long-term discount required.</div>
+          </div>
+        </div>
+
+        <div id="limitWarn" class="hidden-soft mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700">
+          Maximum quote length is 168 nights.
+        </div>
+
+        <div id="splitCard" class="hidden-soft mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div class="font-semibold">Booking Split (28 nights per booking)</div>
+          <ul id="splitList" class="list-disc pl-5 mt-2 text-sm text-slate-700"></ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="text-xl font-semibold mb-3">Charges</h2>
+        <div class="grid grid-cols-1 gap-3">
+          <label class="block">
+            <span class="text-sm font-medium text-gray-700">Linen (per booking)</span>
+            <input id="linenEach" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="required" value="0">
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium text-gray-700">Cleaning (per booking)</span>
+            <input id="cleanEach" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="required" value="0">
+          </label>
+
+          <label class="inline-flex items-center gap-2">
+            <input id="lockCounts" type="checkbox" class="h-4 w-4" checked>
+            <span class="text-sm text-gray-700">Lock linen/clean counts to booking count</span>
+          </label>
+
+          <div class="grid grid-cols-2 gap-3">
+            <label class="block">
+              <span class="text-sm font-medium text-gray-700">Linen count</span>
+              <input id="linenCount" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" value="0">
+            </label>
+            <label class="block">
+              <span class="text-sm font-medium text-gray-700">Cleaning count</span>
+              <input id="cleanCount" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" value="0">
+            </label>
+          </div>
+          <div class="mini">Default is 1 linen and 1 clean per booking created. Unlock if you need exceptions.</div>
+
+          <div id="deepCleanCard" class="hidden-soft mt-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <label class="inline-flex items-center gap-2">
+              <input id="deepCleanOn" type="checkbox" class="h-4 w-4" checked>
+              <span class="text-sm font-medium text-gray-800">End of stay deep clean</span>
+            </label>
+            <div class="mini mt-1">Required for long-term bookings at end of stay.</div>
+            <label class="block mt-2">
+              <span class="text-sm font-medium text-gray-700">Deep clean amount</span>
+              <input id="deepCleanAmt" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" value="120.75">
+            </label>
+          </div>
+
+          <div id="discountCard" class="hidden-soft mt-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+            <label class="inline-flex items-center gap-2">
+              <input id="discountOn" type="checkbox" class="h-4 w-4" checked>
+              <span class="text-sm font-medium text-emerald-900">Apply long-term discount (rent only)</span>
+            </label>
+            <div class="grid grid-cols-2 gap-3 mt-2">
+              <label class="block">
+                <span class="text-sm font-medium text-gray-700">Discount %</span>
+                <input id="discountPct" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" value="15">
+              </label>
+              <div class="block">
+                <span class="text-sm font-medium text-gray-700">Tier</span>
+                <div id="discountTier" class="mt-1 px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-800">29–56 nights</div>
+              </div>
+            </div>
+            <div class="mini mt-2">You can disable or edit this if an exception is approved.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <section class="card">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold">Daily Modifiers Paste Area</h2>
+            <div class="mini mt-1">Paste exported table (headers included). Supports tab-separated, CSV, or copied rows from Enterprise.</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-gray-500">Parsed rates</div>
+            <div id="parsed" class="text-lg font-bold">0</div><div id="matchedInfo" class="text-xs text-gray-500 mt-1"></div>
+          </div>
+        </div>
+
+        <div id="modPaste" contenteditable="true" class="pastebox mt-3 w-full p-3 rounded-xl border border-gray-300 bg-white" data-placeholder="Paste the Daily Modifiers table here..."></div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button id="parse" class="px-3 py-2 rounded-xl bg-blue-600 text-white">Parse rates</button>
+          <button id="clearPaste" class="px-3 py-2 rounded-xl border border-gray-300 bg-white text-gray-700">Clear</button>
+        </div>
+        <div class="mini mt-2">We use the <b>Day Price</b> column per date. This is rent only (excludes GST and GEL).</div>
+      </section>
+
+      <section class="card">
+        <h2 class="text-xl font-semibold mb-3">Quote Summary</h2>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span>Rent (before discount)</span><span id="rentBefore">$0.00</span></div>
+          <div class="flex justify-between"><span>Discount</span><span id="discountValue">$0.00</span></div>
+          <div class="flex justify-between"><span>Rent used for calc</span><span id="rentUsed">$0.00</span></div>
+          <div class="flex justify-between"><span>Owner GST (15%)</span><span id="gst">$0.00</span></div>
+          <div class="flex justify-between"><span>GEL ($12 per night)</span><span id="gel">$0.00</span></div>
+          <div class="flex justify-between"><span>Booking Fee (7.1%, cap $299 per booking)</span><span id="fee">$0.00</span></div>
+          <div class="flex justify-between"><span>Platform markup</span><span id="markup">$0.00</span></div>
+          <div class="flex justify-between"><span>Linen total</span><span id="linenTotal">$0.00</span></div>
+          <div class="flex justify-between"><span>Cleaning total</span><span id="cleanTotal">$0.00</span></div>
+          <div id="deepCleanRow" class="flex justify-between hidden-soft"><span>Deep clean</span><span id="deepCleanTotal">$0.00</span></div>
+          <hr class="my-2">
+          <div class="flex justify-between text-lg font-bold"><span>Total</span><span id="total">$0.00</span></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <section class="card">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold">Itinerary note (HTML)</h2>
+            <div class="mini mt-1">Copy and paste into Enterprise itinerary notes.</div>
+          </div>
+          <button id="copyNote" class="px-3 py-2 rounded-xl bg-slate-800 text-white">Copy</button>
+        </div>
+        <textarea id="noteHtml" class="mt-3 w-full h-56 p-3 rounded-xl border border-gray-300 bg-white" placeholder="Generated after calculation..."></textarea>
+        <div class="mini mt-2">Preview</div>
+        <div id="notePreview" class="mt-2 p-3 rounded-xl border border-gray-200 bg-white"></div>
+      </section>
+
+      <section class="card">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold">Guest quote email (simple)</h2>
+            <div class="mini mt-1">Dates + total only.</div>
+          </div>
+          <button id="copyEmail" class="px-3 py-2 rounded-xl bg-slate-800 text-white">Copy</button>
+        </div>
+        <label class="inline-flex items-center gap-2 mt-2">
+            <input id="holdLine" type="checkbox" class="h-4 w-4">
+            <span class="text-sm text-gray-700">Include 24-hour hold advisory</span>
+          </label>
+          <textarea id="emailText" class="mt-3 w-full h-56 p-3 rounded-xl border border-gray-300 bg-white" placeholder="Generated after calculation..."></textarea>
+      </section>
+    </div>
+    </div>
+
+  </div>
+
+  <!-- Modal: Non-direct long-term discount not allowed -->
+  <div id="noLtDiscountModal" class="modal-overlay hidden-soft" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="p-6">
+        <div class="flex items-start gap-3">
+          <div class="shrink-0 rounded-full bg-amber-50 border border-amber-200 p-2 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900">Long-term discount not available</h3>
+            <p class="mt-2 text-gray-700">Unfortunately no discounts on long term bookings for this platform.</p>
+            <p class="mt-2 text-sm text-gray-500">The quote will calculate without a long-term discount. You can still adjust pricing manually if an exception is approved.</p>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button id="ltClose" class="px-4 py-2 rounded-xl border border-gray-300 bg-white text-gray-700">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const DAY = 86400000;
+  const nzd = (c) => new Intl.NumberFormat('en-NZ',{style:'currency',currency:'NZD'}).format((c||0)/100);
+  const toCents = (v) => {
+    const n = parseFloat(String(v??'').replace(/[^0-9.-]/g,''));
+    if(!isFinite(n)) return 0;
+    return Math.round(n*100);
+  };
+  const parseDate = (v) => {
+    if(!v) return null;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(v)){
+      const [y,m,d]=v.split('-').map(Number);
+      return new Date(Date.UTC(y,m-1,d));
+    }
+    const d = new Date(v);
+    if(isNaN(d)) return null;
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  };
+  const iso = (d) => d.toISOString().slice(0,10);
+
+  function setPlatformGate(){
+    const hasPlatform = !!($('platform').value||'').trim();
+    const content = $('appContent');
+    const gate = $('platformGate');
+    if(content) content.classList.toggle('app-disabled', !hasPlatform);
+    if(gate) gate.style.display = hasPlatform ? 'none' : 'flex';
+  }
+  const nz = (d) => {
+    const dd=String(d.getUTCDate()).padStart(2,'0');
+    const mm=String(d.getUTCMonth()+1).padStart(2,'0');
+    const yy=d.getUTCFullYear();
+    return `${dd}/${mm}/${yy}`;
+  };
+
+  function platformObj(){
+    const v = ($('platform').value||'').trim();
+    if(!v) return {key:'', label:'', markup:0};
+    const [key,label,mu]=v.split('|');
+    return {key, label, markup: parseFloat(mu)||0};
+  }
+
+  // Rates by date
+  let rateMap = {};
+  let rateLoadedCount = 0; // YYYY-MM-DD -> cents
+  let lastNoDiscountShown = false;
+  let discountManual = false;
+  let lastAutoDiscountPct = 0;
+
+  function bookingCountFor(n){
+    if(n<=0) return 0;
+    return Math.ceil(n/28);
+  }
+
+  function suggestedSplits(start, nights){
+    if(!start || nights<=0) return [];
+    let out=[];
+    let cur = new Date(start.getTime());
+    let remaining=nights;
+    let idx=1;
+    while(remaining>0){
+      const take = Math.min(28, remaining);
+      const end = new Date(cur.getTime() + take*DAY);
+      out.push({idx, start:new Date(cur.getTime()), end, nights:take});
+      cur = end;
+      remaining -= take;
+      idx += 1;
+    }
+    return out;
+  }
+
+  function autoDiscountPct(nights){
+    if(nights>=85) return 30;
+    if(nights>=57) return 25;
+    if(nights>=29) return 15;
+    return 0;
+  }
+  function discountTierText(n){
+    if(n>=85) return '85–168 nights';
+    if(n>=57) return '57–84 nights';
+    if(n>=29) return '29–56 nights';
+    return '';
+  }
+
+function parseDailyModifiers(payload){
+  // Accepts either:
+  // - payload: { html: string, text: string }
+  // - string text
+  // Returns { map: { 'YYYY-MM-DD': cents }, count: number }
+  const html = (payload && typeof payload === 'object') ? String(payload.html||'') : '';
+  const rawText = (payload && typeof payload === 'object') ? String(payload.text||'') : String(payload||'');
+
+  // 1) If an HTML <table> is present, parse it directly
+  if(html && html.toLowerCase().includes('<table')){
+    try{
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const table = doc.querySelector('table');
+      if(table){
+        const rows = Array.from(table.querySelectorAll('tr'));
+        if(rows.length){
+          const headerCells = Array.from(rows[0].querySelectorAll('th,td')).map(c=>c.textContent.trim().toLowerCase());
+          const dateIdx = headerCells.findIndex(h=>h==='date');
+          const dayIdx  = headerCells.findIndex(h=>h==='day price' || h==='dayprice' || h==='day_price');
+          // If no header row, assume fixed positions
+          const hasHeader = dateIdx >= 0 && dayIdx >= 0;
+          const map = {};
+          for(let r = hasHeader ? 1 : 0; r < rows.length; r++){
+            const cells = Array.from(rows[r].querySelectorAll('td,th')).map(c=>c.textContent.trim());
+            if(!cells.length) continue;
+            const dateCell = cells[hasHeader ? dateIdx : 0] || '';
+            const dayCell  = cells[hasHeader ? dayIdx  : 3] || '';
+            const dateToken = String(dateCell).split(/\s/)[0].trim();
+            if(!/^\d{4}-\d{2}-\d{2}$/.test(dateToken)) continue;
+
+            // Day Price can be shifted; find the numeric cell immediately before a datetime cell if possible
+            let cents = toCents(dayCell);
+            if(!(cents>0)){
+              const dtIdx = cells.findIndex(v=>/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(v));
+              if(dtIdx>0){
+                for(let i=dtIdx-1;i>=0;i--){
+                  const c = toCents(cells[i]);
+                  if(c>0){ cents=c; break; }
+                }
+              }
+            }
+            if(!(cents>0)){
+              for(let i=cells.length-1;i>=0;i--){
+                const c = toCents(cells[i]);
+                if(c>0){ cents=c; break; }
+              }
+            }
+            if(cents>0) map[dateToken]=cents;
+          }
+          return {map, count:Object.keys(map).length};
+        }
+      }
+    }catch(e){
+      // fall through to text parsing
+    }
+  }
+
+  // 2) Text parsing (handles Enterprise wrapped paste)
+  const raw = String(rawText||'').replace(/\r/g,'').trim();
+  if(!raw) return {map:{}, count:0};
+
+  const lines = raw
+    .split('\n')
+    .map(l=>l.replace(/\u00A0/g,' ').trim())
+    .filter(l=>l.length>0);
+
+  const DATE_TOKEN_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const DATE_LINE_RE  = /^\d{4}-\d{2}-\d{2}(\t|,|\s)/;
+  const DT_RE         = /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/;
+  const NUM_RE        = /^-?\d+(?:\.\d+)?$/;
+
+  const map = {};
+  let pendingDate = null;
+
+  function setRate(dateToken, cents){
+    if(dateToken && cents>0) map[dateToken]=cents;
+  }
+
+  for(let i=0;i<lines.length;i++){
+    const ln = lines[i];
+
+    // If we have a pending date, look for the next numeric-only line as Day Price
+    if(pendingDate){
+      if(DT_RE.test(ln)){
+        // ignore timestamps
+        continue;
+      }
+      if(NUM_RE.test(ln)){
+        const cents = toCents(ln);
+        if(cents>0) setRate(pendingDate, cents);
+        pendingDate = null;
+        continue;
+      }
+      // If next date arrives before a numeric line, reset pendingDate to that new date
+      if(DATE_LINE_RE.test(ln) || DATE_TOKEN_RE.test(ln.split(/\s|\t|,/)[0])){
+        // fall through to date parsing below
+      } else {
+        continue;
+      }
+    }
+
+    // Date line
+    if(DATE_LINE_RE.test(ln) || DATE_TOKEN_RE.test(ln.split(/\s|\t|,/)[0])){
+      const tokens = ln.split(/\t|,/).map(s=>s.trim()).filter(s=>s.length>0);
+      const dateToken = (tokens[0]||'').split(/\s/)[0].trim();
+      if(!DATE_TOKEN_RE.test(dateToken)) continue;
+
+      // If this line already has a datetime, extract Day Price as the numeric token just before it
+      let cents = 0;
+      const dtIdx = tokens.findIndex(t=>DT_RE.test(t));
+      if(dtIdx>0){
+        for(let j=dtIdx-1;j>=0;j--){
+          const c = toCents(tokens[j]);
+          if(c>0){ cents=c; break; }
+        }
+      }
+
+      // If no datetime on the same line, try to guess Day Price from tokens (day price usually last numeric token before timestamp)
+      if(!(cents>0)){
+        // Prefer token after modifier if it exists: date, week, modifier, day
+        if(tokens.length>=4){
+          cents = toCents(tokens[3]);
+        }
+      }
+
+      // If still empty, set pendingDate and read next numeric line
+      if(!(cents>0)){
+        pendingDate = dateToken;
+      } else {
+        setRate(dateToken, cents);
+        pendingDate = null;
+      }
+    }
+  }
+
+  return {map, count:Object.keys(map).length};
+}
+
+  function sumRent(start, end){
+    if(!start || !end) return {sum:0, missing:0};
+    let sum=0, missing=0;
+    for(let d=new Date(start.getTime()); d<end; d=new Date(d.getTime()+DAY)){
+      const k=iso(d);
+      if(rateMap[k]!=null) sum += rateMap[k];
+      else missing += 1;
+    }
+    return {sum, missing};
+  }
+
+  function showNoDiscountModal(){
+    // Only show once per open long-term scenario until resolved
+    if(lastNoDiscountShown) return;
+    lastNoDiscountShown = true;
+    $('noLtDiscountModal').classList.remove('hidden-soft');
+    setTimeout(()=> $('ltClose')?.focus(), 0);
+  }
+  function hideNoDiscountModal(){
+    $('noLtDiscountModal').classList.add('hidden-soft');
+  }
+
+  function updateCountsLock(bookingCount){
+    const lock = $('lockCounts').checked;
+    const lc=$('linenCount');
+    const cc=$('cleanCount');
+    if(lock){
+      lc.value = String(bookingCount);
+      cc.value = String(bookingCount);
+      lc.disabled=true; cc.disabled=true;
+      lc.classList.add('bg-gray-50');
+      cc.classList.add('bg-gray-50');
+    } else {
+      lc.disabled=false; cc.disabled=false;
+      lc.classList.remove('bg-gray-50');
+      cc.classList.remove('bg-gray-50');
+      if(!lc.value) lc.value=String(bookingCount);
+      if(!cc.value) cc.value=String(bookingCount);
+    }
+  }
+
+  function buildOutputs(payload){
+    const {
+      platformLabel, platformMarkupPct,
+      pid, checkin, checkout, nights,
+      rentBeforeC, discountC, rentUsedC,
+      gstC, gelC, feeC, markupC,
+      linenTotalC, cleanTotalC, deepCleanC, totalC,
+      longTerm, bookingSplits
+    } = payload;
+
+    const channelText = `${platformLabel || '-'} (Markup ${((platformMarkupPct||0)).toFixed(1)}%)`;
+
+    // Itinerary note HTML in Enterprise-friendly <br> format
+    let ltSplitText = '';
+    if(longTerm && bookingSplits && bookingSplits.length){
+      ltSplitText = bookingSplits.map(s=>`Booking ${s.idx}: ${s.start} to ${s.end} (${s.nights} nights)`).join('<br>');
+      ltSplitText = `<br><br><b>Booking Split</b><br>${ltSplitText}`;
+    }
+
+    const note = (
+      `<b>Booking Breakdown</b><br>`+
+      `<b>Property ID:</b> ${pid || ''}<br>`+
+      `<b>Channel:</b> ${channelText}<br>`+
+      `<b>Scenario:</b> Quote<br><br>`+
+      `Check-in: ${checkin} &nbsp;|&nbsp; Check-out: ${checkout} &nbsp;|&nbsp; Nights: ${nights}<br>`+
+      `Rent Before Discount: ${nzd(rentBeforeC)}<br>`+
+      `Rent Discount (${Math.round(discountPct)}%): ${(discountC>0)?('-'+nzd(discountC)):nzd(0)}<br>`+
+      `Rent Including Discount: ${nzd(rentUsedC)}<br>`+
+      `Linen: ${nzd(linenTotalC)}<br>`+
+      `Cleaning: ${nzd(cleanTotalC)}<br>`+
+      `Owner GST Total: ${nzd(gstC)}<br>`+
+      `GEL: ${nzd(gelC)}<br>`+
+      `Channel Markup: ${nzd(markupC)}<br>`+
+      `Booking Fee: ${nzd(feeC)}<br>`+
+      `${(longTerm && deepCleanC>0) ? `Deep clean: ${nzd(deepCleanC)}<br>` : ''}`+
+      `Amendment Fee: N/A<br>`+
+      `Total: ${nzd(totalC)}`+
+      `${ltSplitText}`+
+      `<br><br><b>Outcome</b><br>`+
+      `Amount to charge guest: ${nzd(totalC)}<br>`
+    );
+
+    $('noteHtml').value = note;
+    $('notePreview').innerHTML = note;
+
+    // Guest email
+    const discountLine = discountC > 0 ? `Discount Applied: ${nzd(discountC)}
+` : '';
+    const longTermInfo = (longTerm && (linenCount > 0 || cleanCount > 0)) 
+      ? `
+Additional Booking Details:
+Cleaning services included: ${cleanCount}
+Linen sets included: ${linenCount}
+`
+      : '';
+    const holdLineText = ($('holdLine') && $('holdLine').checked)
+      ? `
+Please give us a ring for a quick response as this quote and blocked dates are for 24 hours.
+`
+      : '';
+
+    const email = `Hi there,
+
+Thank you for your enquiry. Please find the details of your accommodation quote below:
+
+Booking Dates: ${checkin} to ${checkout}
+Total Nights: ${nights} nights
+${discountLine}Total Cost of the Booking: ${nzd(totalC)}
+${longTermInfo}${holdLineText}
+If you would like to proceed or have any questions, please let us know and we will be happy to assist.
+
+Kind Regards
+The Bachcare Support Team`;
+    $('emailText').value = email;
+  }
+
+  function recompute(){
+    const p = platformObj();
+    const s = parseDate($('checkin').value);
+    const e = parseDate($('checkout').value);
+    const nights = (s && e) ? Math.max(0, Math.round((e - s)/DAY)) : 0;
+
+    $('nights').textContent = String(nights);
+
+    setPlatformGate();
+    if(!(($('platform').value||'').trim())){
+      // Keep outputs blank until a platform is selected
+      $('bookingCount').textContent='0';
+      $('status').textContent='';
+      $('statusHint').textContent='';
+      $('total').textContent = nzd(0);
+      $('noteHtml').value='';
+      $('notePreview').innerHTML='';
+      $('emailText').value='';
+      return;
+    }
+
+    const tooLong = nights>168;
+    $('limitWarn').classList.toggle('hidden-soft', !tooLong);
+    if(tooLong){
+      $('bookingCount').textContent='0';
+      $('total').textContent = nzd(0);
+      $('noteHtml').value='';
+      $('notePreview').innerHTML='';
+      $('emailText').value='';
+      return;
+    }
+
+    const longTerm = nights>28;
+    const bookingCount = bookingCountFor(nights);
+    $('bookingCount').textContent = String(bookingCount);
+
+    $('status').textContent = longTerm ? 'Long-term' : 'Short stay';
+    $('statusHint').textContent = longTerm ? 'Split into 28-night bookings. Discount tier applies for Direct only.' : 'No long-term discount required.';
+
+    $('splitCard').classList.toggle('hidden-soft', !longTerm);
+    const splits = longTerm ? suggestedSplits(s, nights) : [];
+    const ul = $('splitList');
+    ul.innerHTML='';
+    splits.forEach(x=>{
+      const li=document.createElement('li');
+      li.textContent = `Booking ${x.idx}: ${nz(parseDate(x.start.toISOString().slice(0,10))||x.start)} to ${nz(parseDate(x.end.toISOString().slice(0,10))||x.end)} (${x.nights} nights)`;
+      ul.appendChild(li);
+    });
+
+    $('deepCleanCard').classList.toggle('hidden-soft', !longTerm);
+
+    // counts
+    updateCountsLock(bookingCount);
+
+    // Rent
+    const rentRes = sumRent(s,e);
+    const rentBeforeC = rentRes.sum;
+
+    // Parsed rates = number of unique dates parsed from Daily Modifiers
+    $('parsed').textContent = String(rateLoadedCount);
+
+    // Matched nights = how many nights in the selected date range have a Day Price loaded
+    const matchedNights = (s && e) ? Math.max(0, nights - rentRes.missing) : 0;
+    $('matchedInfo').textContent = (s && e && nights>0) ? (`Matched nights for selected dates: ${matchedNights} of ${nights}`) : '';
+
+    // Discount UI
+    const direct = p.key === 'direct';
+    const showDiscount = longTerm && direct;
+    $('discountCard').classList.toggle('hidden-soft', !showDiscount);
+
+    // Always hide modal unless long-term non-direct is active
+    const shouldWarnNoDiscount = longTerm && p.key && !direct;
+    if(!shouldWarnNoDiscount){
+      hideNoDiscountModal();
+      lastNoDiscountShown = false; // allow showing again if user later triggers it
+    }
+
+    let discountPct = 0;
+    let discountApplied = false;
+
+    if(showDiscount){
+      const autoPct = autoDiscountPct(nights);
+      $('discountTier').textContent = discountTierText(nights);
+
+      // Auto-apply the correct tier unless the user has manually overridden
+      if(!discountManual || !isFinite(parseFloat($('discountPct').value||'')) || parseFloat($('discountPct').value||'0')===lastAutoDiscountPct){
+        $('discountPct').value = String(autoPct);
+        $('discountOn').checked = autoPct>0;
+        discountManual = false;
+      }
+      lastAutoDiscountPct = autoPct;
+
+      discountPct = parseFloat($('discountPct').value||'0')||0;
+      discountApplied = $('discountOn').checked && discountPct>0;
+    } else {
+      // Non-direct or short stay: make sure discount isn't silently applied
+      $('discountOn').checked = false;
+      discountManual = false;
+      lastAutoDiscountPct = 0;
+    }
+
+    // Non-direct long-term enforcement + popup
+    if(shouldWarnNoDiscount){
+      $('discountOn').checked = false;
+      $('discountPct').value = '0';
+      $('discountTier').textContent = '';
+      showNoDiscountModal();
+    }
+
+    const discountC = discountApplied ? Math.round(rentBeforeC*(discountPct/100)) : 0;
+    const rentUsedC = Math.max(0, rentBeforeC - discountC);
+
+    // Core formulas
+    const ownerGSTRate = 0.15;
+    const bookingFeeRate = 0.071;
+    const gelPerNightC = 1200;
+
+    const gstC = Math.round(rentUsedC*ownerGSTRate);
+    const gelC = nights*gelPerNightC;
+    const feeRawC = Math.round((rentUsedC + gstC) * bookingFeeRate);
+    const feeCapC = 29900 * Math.max(1, bookingCount);
+    const feeC = Math.min(feeRawC, feeCapC);
+
+    const markupBaseC = Math.round((rentUsedC*(1+ownerGSTRate)) + gelC + feeC);
+    const markupC = Math.round(markupBaseC * (p.markup||0));
+
+    const linenEachC = toCents($('linenEach').value);
+    const cleanEachC = toCents($('cleanEach').value);
+    const linenCount = parseInt($('linenCount').value||'0',10)||0;
+    const cleanCount = parseInt($('cleanCount').value||'0',10)||0;
+
+    const linenTotalC = linenEachC*linenCount;
+    const cleanTotalC = cleanEachC*cleanCount;
+
+    let deepCleanC = 0;
+    if(longTerm && $('deepCleanOn').checked){
+      deepCleanC = toCents($('deepCleanAmt').value);
+    }
+
+    const totalC = rentUsedC + gstC + gelC + feeC + markupC + linenTotalC + cleanTotalC + deepCleanC;
+
+    // Summary
+    $('rentBefore').textContent = nzd(rentBeforeC);
+    $('discountValue').textContent = nzd(discountC);
+    $('rentUsed').textContent = nzd(rentUsedC);
+    $('gst').textContent = nzd(gstC);
+    $('gel').textContent = nzd(gelC);
+    $('fee').textContent = nzd(feeC);
+    $('markup').textContent = nzd(markupC);
+    $('linenTotal').textContent = nzd(linenTotalC);
+    $('cleanTotal').textContent = nzd(cleanTotalC);
+
+    $('deepCleanRow').classList.toggle('hidden-soft', !(longTerm && deepCleanC>0));
+    $('deepCleanTotal').textContent = nzd(deepCleanC);
+
+    $('total').textContent = nzd(totalC);
+
+    // Outputs
+    const checkinTxt = s ? nz(s) : '-';
+    const checkoutTxt = e ? nz(e) : '-';
+    const splitPayload = splits.map(x=>({idx:x.idx, start:nz(x.start), end:nz(x.end), nights:x.nights}));
+
+    buildOutputs({
+      platformLabel: p.label,
+      platformMarkupPct: (p.markup||0)*100,
+      pid: $('pid').value.trim(),
+      checkin: checkinTxt,
+      checkout: checkoutTxt,
+      nights,
+      rentBeforeC,
+      discountC,
+      rentUsedC,
+      gstC,
+      gelC,
+      feeC,
+      markupC,
+      linenTotalC,
+      cleanTotalC,
+      deepCleanC,
+      totalC,
+      longTerm,
+      bookingSplits: splitPayload,
+      linenCount,
+      cleanCount
+    });
+  }
+
+  function robustCopy(id){
+    const node = $(id);
+    const text = node.value;
+    navigator.clipboard?.writeText(text).then(()=>{
+      // no toast to keep it simple
+    }).catch(()=>{
+      node.focus(); node.select();
+      document.execCommand('copy');
+    });
+  }
+
+function getPastePayload(){
+  const el = $('modPaste');
+  return { html: el.innerHTML || '', text: el.innerText || '' };
+}
+
+function looksTabular(text){
+  const lines = String(text||'').replace(/\r/g,'').split('\n').filter(l=>l.trim().length>0);
+  if(lines.length < 2) return false;
+  const counts = lines.map(l=>l.split('\t').length);
+  const max = Math.max(...counts);
+  const min = Math.min(...counts);
+  return max >= 3 && min >= 3 && (max-min) <= 1;
+}
+
+function textToTableHtml(text){
+  const lines = String(text||'').replace(/\r/g,'').split('\n').filter(l=>l.trim().length>0);
+  const rows = lines.map(l=>l.split('\t').map(c=>c.trim()));
+  const maxCols = Math.max(...rows.map(r=>r.length));
+  const norm = rows.map(r=>{ while(r.length<maxCols) r.push(''); return r; });
+  // If the first row looks like headers, render as <th>
+  const first = norm[0].map(c=>c.toLowerCase());
+  const hasHeader = first.includes('date') && (first.includes('day price') || first.includes('dayprice') || first.includes('day_price'));
+  let html = '<table><tbody>';
+  for(let i=0;i<norm.length;i++){
+    html += '<tr>';
+    for(let j=0;j<maxCols;j++){
+      const tag = (hasHeader && i===0) ? 'th' : 'td';
+      html += `<${tag}>${escapeHtml(norm[i][j])}</${tag}>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function escapeHtml(s){
+  return String(s||'')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#39;");
+}
+
+  function resetAll(){
+    $('platform').value='';
+    $('pid').value='';
+    $('modPaste').innerHTML='';
+    rateMap = {};
+    rateLoadedCount = 0;
+    $('parsed').textContent='0';
+    $('matchedInfo').textContent='';
+    $('linenEach').value='0';
+    $('cleanEach').value='0';
+    $('lockCounts').checked=true;
+    $('linenCount').value='0';
+    $('cleanCount').value='0';
+    $('deepCleanOn').checked=true;
+    $('deepCleanAmt').value='120.75';
+    $('discountOn').checked=true;
+    $('discountPct').value='15';
+    $('discountTier').textContent='29–56 nights';
+    hideNoDiscountModal();
+    lastNoDiscountShown=false;
+    discountManual=false;
+    lastAutoDiscountPct=0;
+    // clear dates via flatpickr instances
+    $('checkin')._flatpickr?.clear();
+    $('checkout')._flatpickr?.clear();
+    recompute();
+  }
+
+  // Init
+  (function init(){
+    const opts = { altInput:true, altFormat:'d/m/Y', dateFormat:'Y-m-d', allowInput:true, onChange: recompute };
+    flatpickr('#checkin', opts);
+    flatpickr('#checkout', opts);
+
+    // Events
+    ['platform','pid','linenEach','cleanEach','lockCounts','linenCount','cleanCount','deepCleanOn','deepCleanAmt','discountOn','discountPct'].forEach(id=>{
+      $(id).addEventListener('input', recompute);
+      $(id).addEventListener('change', recompute);
+    });
+
+    // Gate until platform is selected
+    $('platform').addEventListener('change', ()=>{ setPlatformGate(); recompute(); });
+    // Rebuild email when hold-line checkbox changes
+    $('holdLine')?.addEventListener('change', recompute);
+
+    // Track manual discount edits
+    $('discountPct').addEventListener('input', ()=>{ discountManual = true; });
+
+
+
+// Paste handling: accept HTML tables (Teams) or convert TSV into a table for readability
+const pasteEl = $('modPaste');
+pasteEl.addEventListener('paste', (e)=>{
+  const cb = e.clipboardData;
+  if(!cb) return;
+  const htmlData = cb.getData('text/html');
+  let textData = cb.getData('text/plain');
+
+  // If HTML contains a table, keep it
+  if(htmlData && htmlData.toLowerCase().includes('<table')){
+    e.preventDefault();
+    document.execCommand('insertHTML', false, htmlData);
+    return;
+  }
+
+  // If it's tabular TSV, render as a table so it looks like Enterprise/Teams
+  if(textData && looksTabular(textData)){
+    e.preventDefault();
+    document.execCommand('insertHTML', false, textToTableHtml(textData));
+    return;
+  }
+
+  // Otherwise, allow normal paste (plain text / wrapped format)
+});
+
+    $('parse').addEventListener('click', ()=>{
+      const res = parseDailyModifiers(getPastePayload());
+      rateMap = res.map;
+      rateLoadedCount = res.count;
+      recompute();
+    });
+    $('clearPaste').addEventListener('click', ()=>{
+      $('modPaste').innerHTML='';
+      rateMap = {};
+      rateLoadedCount = 0;
+      $('parsed').textContent='0';
+    $('matchedInfo').textContent='';
+      recompute();
+    });
+
+    $('copyNote').addEventListener('click', ()=>robustCopy('noteHtml'));
+    $('copyEmail').addEventListener('click', ()=>robustCopy('emailText'));
+
+    $('reset').addEventListener('click', resetAll);
+
+    // Modal close
+    $('ltClose').addEventListener('click', hideNoDiscountModal);
+    $('noLtDiscountModal').addEventListener('click', (e)=>{ if(e.target === $('noLtDiscountModal')) hideNoDiscountModal(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') hideNoDiscountModal(); });
+
+    // First compute
+    recompute();
+    setPlatformGate();
+  })();
+</script>
+</body>
+</html>
