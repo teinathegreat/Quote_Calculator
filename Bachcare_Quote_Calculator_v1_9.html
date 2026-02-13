@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+
+<!-- saved from url=(0082)https://teinathegreat.github.io/Quote_Calculator/Bachcare_Quote_Calculatov1_7.html -->
+<html lang="en"><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Bachcare Quote Calculator (Standalone) - v1.9</title>
+<script src="./Bachcare Quote Calculator (Standalone) - v1.9_files/saved_resource"></script><style id="operaUserStyle" type="text/css"></style>
+<link href="./Bachcare Quote Calculator (Standalone) - v1.9_files/flatpickr.min.css" rel="stylesheet"/>
+<script src="./Bachcare Quote Calculator (Standalone) - v1.9_files/flatpickr"></script>
+<style>
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.25rem;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+    .tile{background:#f8fafc;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem}
+    .mini{font-size:.82rem;color:#64748b}
+    .hidden-soft{display:none !important}
+    .modal-overlay.hidden-soft{display:none !important}
+    .modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,.6);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:60}
+    .modal{max-width:42rem;width:100%;background:#fff;border-radius:1rem;border:1px solid #e2e8f0;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+    #notePreview{max-height:18rem;overflow:auto}
+
+    .pastebox{min-height:10rem;max-height:10rem;overflow:auto;white-space:pre-wrap}
+    .pastebox:empty:before{content:attr(data-placeholder);color:#94a3b8}
+    .pastebox table{border-collapse:collapse;width:100%}
+    .pastebox td,.pastebox th{border:1px solid #e2e8f0;padding:6px;font-size:12px}
+    .pastebox th{background:#f1f5f9;font-weight:600}
+    .app-disabled{opacity:.45;filter:grayscale(.15);pointer-events:none;user-select:none}
+    .app-content{position:relative}
+    .app-overlay{position:absolute;inset:0;display:none;align-items:flex-start;justify-content:center;padding-top:60px;z-index:20;background:rgba(248,250,252,.75)}
+    .app-overlay .box{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem 1.25rem;box-shadow:0 10px 25px rgba(0,0,0,.15);max-width:34rem;width:calc(100% - 2rem)}
+    .app-overlay .title{font-weight:700;font-size:1.1rem;color:#0f172a}
+    .app-overlay .sub{margin-top:.35rem;color:#475569;font-size:.92rem}
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.my-2{margin-top:0.5rem;margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.ml-2{margin-left:0.5rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.h-4{height:1rem}.h-5{height:1.25rem}.h-56{height:14rem}.min-h-screen{min-height:100vh}.w-4{width:1rem}.w-5{width:1.25rem}.w-full{width:100%}.max-w-6xl{max-width:72rem}.shrink-0{flex-shrink:0}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138 / var(--tw-border-opacity, 1))}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pl-5{padding-left:1.25rem}.text-right{text-align:right}.align-middle{vertical-align:middle}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.tracking-tight{letter-spacing:-0.025em}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-emerald-900{--tw-text-opacity:1;color:rgb(6 78 59 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-gray-900{--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:col-span-2{grid-column:span 2 / span 2}.lg\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}</style></head>
+<body class="bg-gray-50">
+<div class="min-h-screen w-full max-w-6xl mx-auto p-6" data-protonpass-form="">
+<div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+<div>
+<h1 class="text-3xl font-bold tracking-tight">Quote Calculator (NZD)</h1>
+<div class="mini mt-1">Paste Daily Modifiers once, select dates, and the calculator will price the stay automatically.</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">Version 1.9</span>
+</div>
+<div class="mb-4 flex flex-wrap items-end gap-3">
+<label class="text-sm text-gray-700">
+        Platform
+        <select class="ml-2 px-3 py-2 rounded-xl border border-gray-300 bg-white align-middle" id="platform">
+<option selected="" value="">Select Platform</option>
+<option value="direct|Bachcare Direct|0">Bachcare Direct</option>
+<option value="bcom|Booking.com|0.239">Booking.com</option>
+<option value="vrbo|VRBO|0.202">VRBO</option>
+<option value="airbnb|Airbnb|0.255">Airbnb</option>
+</select>
+</label>
+<label class="text-sm text-gray-700">
+        Property ID
+        <input class="ml-2 px-3 py-2 rounded-xl border border-gray-300 bg-white" id="pid" placeholder="e.g. 341234" type="text"/>
+</label>
+<button class="px-3 py-2 rounded-xl border border-gray-300 bg-white text-gray-700" id="reset">Reset</button>
+</div>
+<div class="app-content app-disabled" id="appContent">
+<div class="app-overlay" id="platformGate" style="display: flex;">
+<div class="box">
+<div class="title">Select a platform to begin</div>
+<div class="sub">Choose a platform above to unlock the calculator and generate a quote.</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<section class="card lg:col-span-2">
+<h2 class="text-xl font-semibold mb-3">Stay Dates</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Check-in</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white flatpickr-input" id="checkin" placeholder="Select date" type="text"/>
+</label>
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Check-out</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white flatpickr-input" id="checkout" placeholder="Select date" type="text"/>
+</label>
+</div>
+<div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="tile">
+<div class="text-xs text-gray-500">Nights</div>
+<div class="text-2xl font-bold" id="nights">0</div>
+<div class="mini">Max 168 for quotes.</div>
+</div>
+<div class="tile">
+<div class="text-xs text-gray-500">Booking count</div>
+<div class="text-2xl font-bold" id="bookingCount">0</div>
+<div class="mini">28 nights per booking.</div>
+</div>
+<div class="tile">
+<div class="text-xs text-gray-500">Status</div>
+<div class="text-2xl font-bold" id="status"></div>
+<div class="mini" id="statusHint"></div>
+</div>
+</div>
+<div class="hidden-soft mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700" id="limitWarn">
+          Maximum quote length is 168 nights.
+        </div>
+<div class="hidden-soft mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4" id="splitCard">
+<div class="font-semibold">Booking Split (28 nights per booking)</div>
+<ul class="list-disc pl-5 mt-2 text-sm text-slate-700" id="splitList"></ul>
+</div>
+</section>
+<section class="card">
+<h2 class="text-xl font-semibold mb-3">Charges</h2>
+<div class="grid grid-cols-1 gap-3">
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Linen (per booking)</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" id="linenEach" placeholder="required" value="0"/>
+</label>
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Cleaning (per booking)</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" id="cleanEach" placeholder="required" value="0"/>
+</label>
+<label class="inline-flex items-center gap-2">
+<input checked="" class="h-4 w-4" id="lockCounts" type="checkbox"/>
+<span class="text-sm text-gray-700">Lock linen/clean counts to booking count</span>
+</label>
+<div class="grid grid-cols-2 gap-3">
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Linen count</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" id="linenCount" value="0"/>
+</label>
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Cleaning count</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" id="cleanCount" value="0"/>
+</label>
+</div>
+<div class="mini">Default is 1 linen and 1 clean per booking created. Unlock if you need exceptions.</div>
+<div class="hidden-soft mt-2 rounded-xl border border-slate-200 bg-slate-50 p-3" id="deepCleanCard">
+<label class="inline-flex items-center gap-2">
+<input checked="" class="h-4 w-4" id="deepCleanOn" type="checkbox"/>
+<span class="text-sm font-medium text-gray-800">End of stay deep clean</span>
+</label>
+<div class="mini mt-1">Required for long-term bookings at end of stay.</div>
+<label class="block mt-2">
+<span class="text-sm font-medium text-gray-700">Deep clean amount</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" id="deepCleanAmt" value="120.75"/>
+</label>
+</div>
+<div class="hidden-soft mt-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3" id="discountCard">
+<label class="inline-flex items-center gap-2">
+<input checked="" class="h-4 w-4" id="discountOn" type="checkbox"/>
+<span class="text-sm font-medium text-emerald-900">Apply long-term discount (rent only)</span>
+</label>
+<div class="grid grid-cols-2 gap-3 mt-2">
+<label class="block">
+<span class="text-sm font-medium text-gray-700">Discount %</span>
+<input class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" id="discountPct" value="15"/>
+</label>
+<div class="block">
+<span class="text-sm font-medium text-gray-700">Tier</span>
+<div class="mt-1 px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-800" id="discountTier">29–56 nights</div>
+</div>
+</div>
+<div class="mini mt-2">You can disable or edit this if an exception is approved.</div>
+</div>
+</div>
+<div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3" id="addChargesCard">
+<div class="flex items-start justify-between gap-3">
+<div>
+<div class="text-sm font-semibold text-gray-800">Additional Charges</div>
+<div class="mini mt-1">Add optional extra charges. These are added to the total.</div>
+</div>
+<button class="px-3 py-1 rounded-xl border border-gray-300 bg-white text-gray-700" id="addChargeBtn">Add</button>
+</div>
+<div class="mt-3 space-y-2" id="addChargeRows"></div>
+<div class="mini mt-2">Use one line per charge. Amounts are NZD.</div>
+</div>
+</section>
+</div>
+<div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+<section class="card">
+<div class="flex items-start justify-between gap-3">
+<div>
+<h2 class="text-xl font-semibold">Daily Modifiers Paste Area</h2>
+<div class="mini mt-1">Paste exported table (headers included). Supports tab-separated, CSV, or copied rows from Enterprise.</div>
+</div>
+<div class="text-right">
+<div class="text-xs text-gray-500">Parsed rates</div>
+<div class="text-lg font-bold" id="parsed">0</div><div class="text-xs text-gray-500 mt-1" id="matchedInfo"></div>
+</div>
+</div>
+<div class="pastebox mt-3 w-full p-3 rounded-xl border border-gray-300 bg-white" contenteditable="true" data-placeholder="Paste the Daily Modifiers table here..." id="modPaste"></div>
+<div class="mt-3 flex flex-wrap gap-2">
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white" id="parse">Parse rates</button>
+<button class="px-3 py-2 rounded-xl border border-gray-300 bg-white text-gray-700" id="clearPaste">Clear</button>
+</div>
+<div class="mini mt-2">We use the <b>Day Price</b> column per date. This is rent only (excludes GST and GEL).</div>
+</section>
+<section class="card">
+<h2 class="text-xl font-semibold mb-3">Quote Summary</h2>
+<div class="space-y-2 text-sm">
+<div class="flex justify-between"><span>Rent (before discount)</span><span id="rentBefore">$0.00</span></div>
+<div class="flex justify-between"><span>Discount</span><span id="discountValue">$0.00</span></div>
+<div class="flex justify-between"><span>Rent used for calc</span><span id="rentUsed">$0.00</span></div>
+<div class="flex justify-between"><span>Owner GST (15%)</span><span id="gst">$0.00</span></div>
+<div class="flex justify-between"><span>GEL ($12 per night)</span><span id="gel">$0.00</span></div>
+<div class="flex justify-between"><span>Booking Fee (7.1%, cap $299 per booking)</span><span id="fee">$0.00</span></div>
+<div class="flex justify-between"><span>Platform markup</span><span id="markup">$0.00</span></div>
+<div class="flex justify-between"><span>Linen total</span><span id="linenTotal">$0.00</span></div>
+<div class="flex justify-between"><span>Cleaning total</span><span id="cleanTotal">$0.00</span></div>
+<div class="flex justify-between hidden-soft" id="deepCleanRow"><span>Deep clean</span><span id="deepCleanTotal">$0.00</span></div>
+<div id="addChargesSummary"></div>
+<hr class="my-2"/>
+<div class="flex justify-between text-lg font-bold"><span>Total</span><span id="total">$0.00</span></div>
+</div>
+</section>
+</div>
+<div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+<section class="card">
+<div class="flex items-start justify-between gap-3">
+<div>
+<h2 class="text-xl font-semibold">Itinerary note (HTML)</h2>
+<div class="mini mt-1">Copy and paste into Enterprise itinerary notes.</div>
+</div>
+<button class="px-3 py-2 rounded-xl bg-slate-800 text-white" id="copyNote">Copy</button>
+</div>
+
+        <div class="mt-4">
+          <label class="block">
+            <span class="text-sm font-medium text-gray-700">Booking note (optional)</span>
+            <textarea id="bookingNote" class="mt-1 w-full h-24 p-3 rounded-xl border border-gray-300 bg-white" placeholder="Add any context for this booking (this will appear in the itinerary notes)."></textarea>
+          </label>
+          <div class="mini mt-1">New lines will be preserved in the itinerary note preview.</div>
+        </div>
+
+<textarea class="mt-3 w-full h-56 p-3 rounded-xl border border-gray-300 bg-white" id="noteHtml" placeholder="Generated after calculation..."></textarea>
+<div class="mini mt-2">Preview</div>
+<div class="mt-2 p-3 rounded-xl border border-gray-200 bg-white" id="notePreview"></div>
+</section>
+<section class="card">
+<div class="flex items-start justify-between gap-3">
+<div>
+<h2 class="text-xl font-semibold">Guest quote email (simple)</h2>
+<div class="mini mt-1">Dates + total only.</div>
+</div>
+<button class="px-3 py-2 rounded-xl bg-slate-800 text-white" id="copyEmail">Copy</button>
+</div>
+<label class="inline-flex items-center gap-2 mt-2">
+<input class="h-4 w-4" id="holdLine" type="checkbox"/>
+<span class="text-sm text-gray-700">Include 24-hour hold advisory</span>
+</label>
+<textarea class="mt-3 w-full h-56 p-3 rounded-xl border border-gray-300 bg-white" id="emailText" placeholder="Generated after calculation..."></textarea>
+</section>
+</div>
+</div>
+</div>
+<!-- Modal: Non-direct long-term discount not allowed -->
+<div aria-modal="true" class="modal-overlay hidden-soft" id="noLtDiscountModal" role="dialog">
+<div class="modal">
+<div class="p-6">
+<div class="flex items-start gap-3">
+<div class="shrink-0 rounded-full bg-amber-50 border border-amber-200 p-2 mt-1">
+<svg class="h-5 w-5 text-amber-600" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-xl font-semibold text-gray-900">Long-term discount not available</h3>
+<p class="mt-2 text-gray-700">Unfortunately no discounts on long term bookings for this platform.</p>
+<p class="mt-2 text-sm text-gray-500">The quote will calculate without a long-term discount. You can still adjust pricing manually if an exception is approved.</p>
+</div>
+</div>
+<div class="mt-6 flex justify-end gap-2">
+<button class="px-4 py-2 rounded-xl border border-gray-300 bg-white text-gray-700" id="ltClose">OK</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const DAY = 86400000;
+  const nzd = (c) => new Intl.NumberFormat('en-NZ',{style:'currency',currency:'NZD'}).format((c||0)/100);
+  const toCents = (v) => {
+    const n = parseFloat(String(v??'').replace(/[^0-9.-]/g,''));
+    if(!isFinite(n)) return 0;
+    return Math.round(n*100);
+  };
+  const parseDate = (v) => {
+    if(!v) return null;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(v)){
+      const [y,m,d]=v.split('-').map(Number);
+      return new Date(Date.UTC(y,m-1,d));
+    }
+    const d = new Date(v);
+    if(isNaN(d)) return null;
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  };
+  const iso = (d) => d.toISOString().slice(0,10);
+
+  function setPlatformGate(){
+    const hasPlatform = !!($('platform').value||'').trim();
+    const content = $('appContent');
+    const gate = $('platformGate');
+    if(content) content.classList.toggle('app-disabled', !hasPlatform);
+    if(gate) gate.style.display = hasPlatform ? 'none' : 'flex';
+  }
+  const nz = (d) => {
+    const dd=String(d.getUTCDate()).padStart(2,'0');
+    const mm=String(d.getUTCMonth()+1).padStart(2,'0');
+    const yy=d.getUTCFullYear();
+    return `${dd}/${mm}/${yy}`;
+  };
+
+  function platformObj(){
+    const v = ($('platform').value||'').trim();
+    if(!v) return {key:'', label:'', markup:0};
+    const [key,label,mu]=v.split('|');
+    return {key, label, markup: parseFloat(mu)||0};
+  }
+
+  // Rates by date
+  let rateMap = {};
+  let rateLoadedCount = 0; // YYYY-MM-DD -> cents
+  let lastNoDiscountShown = false;
+  let discountManual = false;
+  let discountOverride = false;
+  let lastAutoDiscountPct = 0;
+
+  function bookingCountFor(n){
+    if(n<=0) return 0;
+    return Math.ceil(n/28);
+  }
+
+  function suggestedSplits(start, nights){
+    if(!start || nights<=0) return [];
+    let out=[];
+    let cur = new Date(start.getTime());
+    let remaining=nights;
+    let idx=1;
+    while(remaining>0){
+      const take = Math.min(28, remaining);
+      const end = new Date(cur.getTime() + take*DAY);
+      out.push({idx, start:new Date(cur.getTime()), end, nights:take});
+      cur = end;
+      remaining -= take;
+      idx += 1;
+    }
+    return out;
+  }
+
+  function autoDiscountPct(nights){
+    if(nights>=85) return 30;
+    if(nights>=57) return 25;
+    if(nights>=29) return 15;
+    return 0;
+  }
+  function discountTierText(n){
+    if(n>=85) return '85–168 nights';
+    if(n>=57) return '57–84 nights';
+    if(n>=29) return '29–56 nights';
+    return '';
+  }
+
+function parseDailyModifiers(payload){
+  // Accepts either:
+  // - payload: { html: string, text: string }
+  // - string text
+  // Returns { map: { 'YYYY-MM-DD': cents }, count: number }
+  const html = (payload && typeof payload === 'object') ? String(payload.html||'') : '';
+  const rawText = (payload && typeof payload === 'object') ? String(payload.text||'') : String(payload||'');
+
+  // 1) If an HTML <table> is present, parse it directly
+  if(html && html.toLowerCase().includes('<table')){
+    try{
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const table = doc.querySelector('table');
+      if(table){
+        const rows = Array.from(table.querySelectorAll('tr'));
+        if(rows.length){
+          const headerCells = Array.from(rows[0].querySelectorAll('th,td')).map(c=>c.textContent.trim().toLowerCase());
+          const dateIdx = headerCells.findIndex(h=>h==='date');
+          const dayIdx  = headerCells.findIndex(h=>h==='day price' || h==='dayprice' || h==='day_price');
+          // If no header row, assume fixed positions
+          const hasHeader = dateIdx >= 0 && dayIdx >= 0;
+          const map = {};
+          for(let r = hasHeader ? 1 : 0; r < rows.length; r++){
+            const cells = Array.from(rows[r].querySelectorAll('td,th')).map(c=>c.textContent.trim());
+            if(!cells.length) continue;
+            const dateCell = cells[hasHeader ? dateIdx : 0] || '';
+            const dayCell  = cells[hasHeader ? dayIdx  : 3] || '';
+            const dateToken = String(dateCell).split(/\s/)[0].trim();
+            if(!/^\d{4}-\d{2}-\d{2}$/.test(dateToken)) continue;
+
+            // Day Price can be shifted; find the numeric cell immediately before a datetime cell if possible
+            let cents = toCents(dayCell);
+            if(!(cents>0)){
+              const dtIdx = cells.findIndex(v=>/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(v));
+              if(dtIdx>0){
+                for(let i=dtIdx-1;i>=0;i--){
+                  const c = toCents(cells[i]);
+                  if(c>0){ cents=c; break; }
+                }
+              }
+            }
+            if(!(cents>0)){
+              for(let i=cells.length-1;i>=0;i--){
+                const c = toCents(cells[i]);
+                if(c>0){ cents=c; break; }
+              }
+            }
+            if(cents>0) map[dateToken]=cents;
+          }
+          return {map, count:Object.keys(map).length};
+        }
+      }
+    }catch(e){
+      // fall through to text parsing
+    }
+  }
+
+  // 2) Text parsing (handles Enterprise wrapped paste)
+  const raw = String(rawText||'').replace(/\r/g,'').trim();
+  if(!raw) return {map:{}, count:0};
+
+  const lines = raw
+    .split('\n')
+    .map(l=>l.replace(/\u00A0/g,' ').trim())
+    .filter(l=>l.length>0);
+
+  const DATE_TOKEN_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const DATE_LINE_RE  = /^\d{4}-\d{2}-\d{2}(\t|,|\s)/;
+  const DT_RE         = /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/;
+  const NUM_RE        = /^-?\d+(?:\.\d+)?$/;
+
+  const map = {};
+  let pendingDate = null;
+
+  function setRate(dateToken, cents){
+    if(dateToken && cents>0) map[dateToken]=cents;
+  }
+
+  for(let i=0;i<lines.length;i++){
+    const ln = lines[i];
+
+    // If we have a pending date, look for the next numeric-only line as Day Price
+    if(pendingDate){
+      if(DT_RE.test(ln)){
+        // ignore timestamps
+        continue;
+      }
+      if(NUM_RE.test(ln)){
+        const cents = toCents(ln);
+        if(cents>0) setRate(pendingDate, cents);
+        pendingDate = null;
+        continue;
+      }
+      // If next date arrives before a numeric line, reset pendingDate to that new date
+      if(DATE_LINE_RE.test(ln) || DATE_TOKEN_RE.test(ln.split(/\s|\t|,/)[0])){
+        // fall through to date parsing below
+      } else {
+        continue;
+      }
+    }
+
+    // Date line
+    if(DATE_LINE_RE.test(ln) || DATE_TOKEN_RE.test(ln.split(/\s|\t|,/)[0])){
+      const tokens = ln.split(/\t|,/).map(s=>s.trim()).filter(s=>s.length>0);
+      const dateToken = (tokens[0]||'').split(/\s/)[0].trim();
+      if(!DATE_TOKEN_RE.test(dateToken)) continue;
+
+      // If this line already has a datetime, extract Day Price as the numeric token just before it
+      let cents = 0;
+      const dtIdx = tokens.findIndex(t=>DT_RE.test(t));
+      if(dtIdx>0){
+        for(let j=dtIdx-1;j>=0;j--){
+          const c = toCents(tokens[j]);
+          if(c>0){ cents=c; break; }
+        }
+      }
+
+      // If no datetime on the same line, try to guess Day Price from tokens (day price usually last numeric token before timestamp)
+      if(!(cents>0)){
+        // Prefer token after modifier if it exists: date, week, modifier, day
+        if(tokens.length>=4){
+          cents = toCents(tokens[3]);
+        }
+      }
+
+      // If still empty, set pendingDate and read next numeric line
+      if(!(cents>0)){
+        pendingDate = dateToken;
+      } else {
+        setRate(dateToken, cents);
+        pendingDate = null;
+      }
+    }
+  }
+
+  return {map, count:Object.keys(map).length};
+}
+
+  function sumRent(start, end){
+    if(!start || !end) return {sum:0, missing:0};
+    let sum=0, missing=0;
+    for(let d=new Date(start.getTime()); d<end; d=new Date(d.getTime()+DAY)){
+      const k=iso(d);
+      if(rateMap[k]!=null) sum += rateMap[k];
+      else missing += 1;
+    }
+    return {sum, missing};
+  }
+
+  function showNoDiscountModal(){
+    // Only show once per open long-term scenario until resolved
+    if(lastNoDiscountShown) return;
+    lastNoDiscountShown = true;
+    $('noLtDiscountModal').classList.remove('hidden-soft');
+    setTimeout(()=> $('ltClose')?.focus(), 0);
+  }
+  function hideNoDiscountModal(){
+    $('noLtDiscountModal').classList.add('hidden-soft');
+  }
+
+  function updateCountsLock(bookingCount){
+    const lock = $('lockCounts').checked;
+    const lc=$('linenCount');
+    const cc=$('cleanCount');
+    if(lock){
+      lc.value = String(bookingCount);
+      cc.value = String(bookingCount);
+      lc.disabled=true; cc.disabled=true;
+      lc.classList.add('bg-gray-50');
+      cc.classList.add('bg-gray-50');
+    } else {
+      lc.disabled=false; cc.disabled=false;
+      lc.classList.remove('bg-gray-50');
+      cc.classList.remove('bg-gray-50');
+      if(!lc.value) lc.value=String(bookingCount);
+      if(!cc.value) cc.value=String(bookingCount);
+    }
+  }
+
+  function buildOutputs(payload){
+    const {
+      platformLabel, platformMarkupPct,
+      pid, bookingNote, checkin, checkout, nights,
+      rentBeforeC, discountC, rentUsedC,
+      gstC, gelC, feeC, markupC,
+      linenTotalC, cleanTotalC, deepCleanC, totalC,
+      additionalChargesItems, additionalChargesTotalC,
+      longTerm, bookingSplits
+    } = payload;
+
+    const channelText = `${platformLabel || '-'} (Markup ${((platformMarkupPct||0)).toFixed(1)}%)`;
+
+    // Itinerary note HTML in Enterprise-friendly <br> format
+    let ltSplitText = '';
+    if(longTerm && bookingSplits && bookingSplits.length){
+      ltSplitText = bookingSplits.map(s=>`Booking ${s.idx}: ${s.start} to ${s.end} (${s.nights} nights)`).join('<br>');
+      ltSplitText = `<br><br><b>Booking Split</b><br>${ltSplitText}`;
+    }
+
+    const note = (
+      `<b>Booking Breakdown</b><br>`+
+      `<b>Property ID:</b> ${pid || ''}<br>`+
+      `<b>Channel:</b> ${channelText}<br>`+
+      `<b>Scenario:</b> Quote<br>`+
+      `${(bookingNote && bookingNote.length) ? (`<b>Booking note:</b> ${escapeHtml(bookingNote).replace(/\n/g,'<br>')}<br>`) : ''}`+
+      `<br>`+
+      `Check-in: ${checkin} &nbsp;|&nbsp; Check-out: ${checkout} &nbsp;|&nbsp; Nights: ${nights}<br>`+
+      `Rent Before Discount: ${nzd(rentBeforeC)}<br>`+
+      `Rent Discount (${Math.round(discountPct)}%): ${(discountC>0)?('-'+nzd(discountC)):nzd(0)}<br>`+
+      `Rent Including Discount: ${nzd(rentUsedC)}<br>`+
+      `Linen: ${nzd(linenTotalC)}<br>`+
+      `Cleaning: ${nzd(cleanTotalC)}<br>`+
+      `${(additionalChargesTotalC>0) ? (`Additional charges: ${nzd(additionalChargesTotalC)}<br>` + (additionalChargesItems||[]).map(x=>`&nbsp;&nbsp;- ${x.info || 'Additional charge'}: ${nzd(x.amtC)}<br>`).join('')) : ''}`+
+      `Owner GST Total: ${nzd(gstC)}<br>`+
+      `GEL: ${nzd(gelC)}<br>`+
+      `Channel Markup: ${nzd(markupC)}<br>`+
+      `Booking Fee: ${nzd(feeC)}<br>`+
+      `${(longTerm && deepCleanC>0) ? `Deep clean: ${nzd(deepCleanC)}<br>` : ''}`+
+      `Amendment Fee: N/A<br>`+
+      `Total: ${nzd(totalC)}`+
+      `${ltSplitText}`+
+      `<br><br><b>Outcome</b><br>`+
+      `Amount to charge guest: ${nzd(totalC)}<br>`
+    );
+
+    $('noteHtml').value = note;
+    $('notePreview').innerHTML = note;
+
+    // Guest email
+    const discountLine = discountC > 0 ? `Discount Applied: ${nzd(discountC)}
+` : '';
+    const longTermInfo = (longTerm && (linenCount > 0 || cleanCount > 0)) 
+      ? `
+Additional Booking Details:
+Cleaning services included: ${cleanCount}
+Linen sets included: ${linenCount}
+`
+      : '';
+    const holdLineText = ($('holdLine') && $('holdLine').checked)
+      ? `
+Please give us a ring for a quick response as this quote and blocked dates are for 24 hours.
+`
+      : '';
+
+    const email = `Hi there,
+
+Thank you for your enquiry. Please find the details of your accommodation quote below:
+
+Booking Dates: ${checkin} to ${checkout}
+Total Nights: ${nights} nights
+${discountLine}Total Cost of the Booking: ${nzd(totalC)}
+${longTermInfo}${holdLineText}
+If you would like to proceed or have any questions, please let us know and we will be happy to assist.
+
+Kind Regards
+The Bachcare Support Team`;
+    $('emailText').value = email;
+  }
+
+  function recompute(){
+    const p = platformObj();
+    const s = parseDate($('checkin').value);
+    const e = parseDate($('checkout').value);
+    const nights = (s && e) ? Math.max(0, Math.round((e - s)/DAY)) : 0;
+
+    $('nights').textContent = String(nights);
+
+    setPlatformGate();
+    if(!(($('platform').value||'').trim())){
+      // Keep outputs blank until a platform is selected
+      $('bookingCount').textContent='0';
+      $('status').textContent='';
+      $('statusHint').textContent='';
+      $('total').textContent = nzd(0);
+      $('noteHtml').value='';
+      $('notePreview').innerHTML='';
+      $('emailText').value='';
+      return;
+    }
+
+    const tooLong = nights>168;
+    $('limitWarn').classList.toggle('hidden-soft', !tooLong);
+    if(tooLong){
+      $('bookingCount').textContent='0';
+      $('total').textContent = nzd(0);
+      $('noteHtml').value='';
+      $('notePreview').innerHTML='';
+      $('emailText').value='';
+      return;
+    }
+
+    const longTerm = nights>28;
+    const bookingCount = bookingCountFor(nights);
+    $('bookingCount').textContent = String(bookingCount);
+
+    $('status').textContent = longTerm ? 'Long-term' : 'Short stay';
+    $('statusHint').textContent = longTerm ? 'Split into 28-night bookings. Discount tier applies for Direct only.' : 'No long-term discount required.';
+
+    $('splitCard').classList.toggle('hidden-soft', !longTerm);
+    const splits = longTerm ? suggestedSplits(s, nights) : [];
+    const ul = $('splitList');
+    ul.innerHTML='';
+    splits.forEach(x=>{
+      const li=document.createElement('li');
+      li.textContent = `Booking ${x.idx}: ${nz(parseDate(x.start.toISOString().slice(0,10))||x.start)} to ${nz(parseDate(x.end.toISOString().slice(0,10))||x.end)} (${x.nights} nights)`;
+      ul.appendChild(li);
+    });
+
+    $('deepCleanCard').classList.toggle('hidden-soft', !longTerm);
+
+    // counts
+    updateCountsLock(bookingCount);
+
+    // Rent
+    const rentRes = sumRent(s,e);
+    const rentBeforeC = rentRes.sum;
+
+    // Parsed rates = number of unique dates parsed from Daily Modifiers
+    $('parsed').textContent = String(rateLoadedCount);
+
+    // Matched nights = how many nights in the selected date range have a Day Price loaded
+    const matchedNights = (s && e) ? Math.max(0, nights - rentRes.missing) : 0;
+    $('matchedInfo').textContent = (s && e && nights>0) ? (`Matched nights for selected dates: ${matchedNights} of ${nights}`) : '';
+
+    // Discount UI
+    const direct = p.key === 'direct';
+    const showDiscount = longTerm && direct;
+    $('discountCard').classList.toggle('hidden-soft', !showDiscount);
+
+    // Always hide modal unless long-term non-direct is active
+    const shouldWarnNoDiscount = longTerm && p.key && !direct;
+    if(!shouldWarnNoDiscount){
+      hideNoDiscountModal();
+      lastNoDiscountShown = false; // allow showing again if user later triggers it
+    }
+
+    let discountPct = 0;
+    let discountApplied = false;
+
+    if(showDiscount){
+      const autoPct = autoDiscountPct(nights);
+      $('discountTier').textContent = discountTierText(nights);
+
+      // Auto-apply the correct tier unless the user has manually overridden
+      if((!discountManual && !discountOverride) || !isFinite(parseFloat($('discountPct').value||'')) || parseFloat($('discountPct').value||'0')===lastAutoDiscountPct){
+        $('discountPct').value = String(autoPct);
+        // Do not force the checkbox if the user has overridden it
+        if(!discountOverride) $('discountOn').checked = autoPct>0;
+        discountManual = false;
+        // do not set discountOverride here, user can still untick afterwards
+      }
+      lastAutoDiscountPct = autoPct;
+
+      discountPct = parseFloat($('discountPct').value||'0')||0;
+      discountApplied = $('discountOn').checked && discountPct>0;
+    } else {
+      // Non-direct or short stay: make sure discount isn't silently applied
+      $('discountOn').checked = false;
+      $('discountPct').value = '0';
+      discountManual = false;
+      discountOverride = false;
+      lastAutoDiscountPct = 0;
+    }
+
+    // Non-direct long-term enforcement + popup
+    if(shouldWarnNoDiscount){
+      $('discountOn').checked = false;
+      $('discountPct').value = '0';
+      $('discountTier').textContent = '';
+      showNoDiscountModal();
+    }
+
+    const discountC = discountApplied ? Math.round(rentBeforeC*(discountPct/100)) : 0;
+    const rentUsedC = Math.max(0, rentBeforeC - discountC);
+
+    // Core formulas
+    const ownerGSTRate = 0.15;
+    const bookingFeeRate = 0.071;
+    const gelPerNightC = 1200;
+
+    const gstC = Math.round(rentUsedC*ownerGSTRate);
+    const gelC = nights*gelPerNightC;
+    const feeRawC = Math.round((rentUsedC + gstC) * bookingFeeRate);
+    const feeCapC = 29900 * Math.max(1, bookingCount);
+    const feeC = Math.min(feeRawC, feeCapC);
+
+    const markupBaseC = Math.round((rentUsedC*(1+ownerGSTRate)) + gelC + feeC);
+    const markupC = Math.round(markupBaseC * (p.markup||0));
+
+    const linenEachC = toCents($('linenEach').value);
+    const cleanEachC = toCents($('cleanEach').value);
+    const linenCount = parseInt($('linenCount').value||'0',10)||0;
+    const cleanCount = parseInt($('cleanCount').value||'0',10)||0;
+
+    const linenTotalC = linenEachC*linenCount;
+    const cleanTotalC = cleanEachC*cleanCount;
+
+    const addData = additionalChargesData();
+    const additionalChargesItems = addData.items;
+    const additionalChargesTotalC = addData.totalC;
+
+    let deepCleanC = 0;
+    if(longTerm && $('deepCleanOn').checked){
+      deepCleanC = toCents($('deepCleanAmt').value);
+    }
+
+    const totalC = rentUsedC + gstC + gelC + feeC + markupC + linenTotalC + cleanTotalC + deepCleanC + additionalChargesTotalC;
+
+    // Summary
+    $('rentBefore').textContent = nzd(rentBeforeC);
+    $('discountValue').textContent = nzd(discountC);
+    $('rentUsed').textContent = nzd(rentUsedC);
+    $('gst').textContent = nzd(gstC);
+    $('gel').textContent = nzd(gelC);
+    $('fee').textContent = nzd(feeC);
+    $('markup').textContent = nzd(markupC);
+    $('linenTotal').textContent = nzd(linenTotalC);
+    $('cleanTotal').textContent = nzd(cleanTotalC);
+    // Additional charges summary
+    const addWrap = $('addChargesSummary');
+    if(addWrap){
+      addWrap.innerHTML = '';
+      if(additionalChargesItems && additionalChargesItems.length){
+        additionalChargesItems.forEach((it, idx)=>{
+          const name = (it.info || `Additional charge ${idx+1}`);
+          const line = document.createElement('div');
+          line.className = 'flex justify-between';
+          line.innerHTML = `<span>${escapeHtml(name)}</span><span>${nzd(it.amtC)}</span>`;
+          addWrap.appendChild(line);
+        });
+        const totalLine = document.createElement('div');
+        totalLine.className = 'flex justify-between font-medium';
+        totalLine.innerHTML = `<span>Additional charges total</span><span>${nzd(additionalChargesTotalC)}</span>`;
+        addWrap.appendChild(totalLine);
+      }
+    }
+
+    $('deepCleanRow').classList.toggle('hidden-soft', !(longTerm && deepCleanC>0));
+    $('deepCleanTotal').textContent = nzd(deepCleanC);
+
+    $('total').textContent = nzd(totalC);
+
+    // Outputs
+    const checkinTxt = s ? nz(s) : '-';
+    const checkoutTxt = e ? nz(e) : '-';
+    const splitPayload = splits.map(x=>({idx:x.idx, start:nz(x.start), end:nz(x.end), nights:x.nights}));
+
+    buildOutputs({
+      platformLabel: p.label,
+      platformMarkupPct: (p.markup||0)*100,
+      pid: $('pid').value.trim(),
+      bookingNote: ($('bookingNote')?.value||'').trim(),
+      checkin: checkinTxt,
+      checkout: checkoutTxt,
+      nights,
+      rentBeforeC,
+      discountC,
+      rentUsedC,
+      gstC,
+      gelC,
+      feeC,
+      markupC,
+      linenTotalC,
+      cleanTotalC,
+      deepCleanC,
+      totalC,
+      additionalChargesItems,
+      additionalChargesTotalC,
+      longTerm,
+      bookingSplits: splitPayload,
+      linenCount,
+      cleanCount
+    });
+  }
+
+  function robustCopy(id){
+    const node = $(id);
+    const text = node.value;
+    navigator.clipboard?.writeText(text).then(()=>{
+      // no toast to keep it simple
+    }).catch(()=>{
+      node.focus(); node.select();
+      document.execCommand('copy');
+    });
+  }
+
+function getPastePayload(){
+  const el = $('modPaste');
+  return { html: el.innerHTML || '', text: el.innerText || '' };
+}
+
+function looksTabular(text){
+  const lines = String(text||'').replace(/\r/g,'').split('\n').filter(l=>l.trim().length>0);
+  if(lines.length < 2) return false;
+  const counts = lines.map(l=>l.split('\t').length);
+  const max = Math.max(...counts);
+  const min = Math.min(...counts);
+  return max >= 3 && min >= 3 && (max-min) <= 1;
+}
+
+function textToTableHtml(text){
+  const lines = String(text||'').replace(/\r/g,'').split('\n').filter(l=>l.trim().length>0);
+  const rows = lines.map(l=>l.split('\t').map(c=>c.trim()));
+  const maxCols = Math.max(...rows.map(r=>r.length));
+  const norm = rows.map(r=>{ while(r.length<maxCols) r.push(''); return r; });
+  // If the first row looks like headers, render as <th>
+  const first = norm[0].map(c=>c.toLowerCase());
+  const hasHeader = first.includes('date') && (first.includes('day price') || first.includes('dayprice') || first.includes('day_price'));
+  let html = '<table><tbody>';
+  for(let i=0;i<norm.length;i++){
+    html += '<tr>';
+    for(let j=0;j<maxCols;j++){
+      const tag = (hasHeader && i===0) ? 'th' : 'td';
+      html += `<${tag}>${escapeHtml(norm[i][j])}</${tag}>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function escapeHtml(s){
+  return String(s||'')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#39;");
+}
+
+
+  function additionalChargesData(){
+    const wrap = $('addChargeRows');
+    if(!wrap) return {items:[], totalC:0};
+    const rows = Array.from(wrap.querySelectorAll('.addChargeRow'));
+    const items = [];
+    let totalC = 0;
+    rows.forEach(r=>{
+      const info = (r.querySelector('.addChargeInfo')?.value || '').trim();
+      const amtC = toCents(r.querySelector('.addChargeAmt')?.value || '');
+      if(info || amtC){
+        items.push({info, amtC});
+        totalC += amtC;
+      }
+    });
+    return {items, totalC};
+  }
+
+  function renderChargeRow(info='', amt=''){
+    const row = document.createElement('div');
+    row.className = 'addChargeRow grid grid-cols-1 sm:grid-cols-4 gap-2 items-end';
+    row.innerHTML = `
+      <label class="block sm:col-span-2">
+        <span class="text-sm font-medium text-gray-700">Additional Charge Info</span>
+        <input class="addChargeInfo mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="e.g. Pet fee" value="${escapeHtml(info)}">
+      </label>
+      <div class="grid grid-cols-2 gap-2 sm:col-span-2">
+        <label class="block">
+          <span class="text-sm font-medium text-gray-700">Amount</span>
+          <input class="addChargeAmt mt-1 w-full px-3 py-2 rounded-xl border border-gray-300 bg-white" placeholder="0.00" value="${escapeHtml(String(amt||''))}">
+        </label>
+        <button type="button" class="removeCharge w-10 h-10 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-700 mt-6 text-xl leading-none" title="Remove">×</button>
+      </div>
+    `;
+    row.querySelector('.addChargeInfo').addEventListener('input', recompute);
+    row.querySelector('.addChargeAmt').addEventListener('input', recompute);
+    row.querySelector('.addChargeInfo').addEventListener('change', recompute);
+    row.querySelector('.addChargeAmt').addEventListener('change', recompute);
+    row.querySelector('.removeCharge').addEventListener('click', ()=>{
+      row.remove();
+      if($('addChargeRows') && $('addChargeRows').children.length===0){
+        $('addChargeRows').appendChild(renderChargeRow());
+      }
+      recompute();
+    });
+    return row;
+  }
+
+
+  function resetAll(){
+    $('platform').value='';
+    $('pid').value='';
+    $('modPaste').innerHTML='';
+    rateMap = {};
+    rateLoadedCount = 0;
+    $('parsed').textContent='0';
+    $('matchedInfo').textContent='';
+    $('linenEach').value='0';
+    $('cleanEach').value='0';
+    $('lockCounts').checked=true;
+    $('linenCount').value='0';
+    $('cleanCount').value='0';
+    $('deepCleanOn').checked=true;
+    $('deepCleanAmt').value='120.75';
+    $('discountOn').checked=true;
+    $('discountPct').value='15';
+    $('discountTier').textContent='29–56 nights';
+    // additional charges
+    if($('addChargeRows')){ $('addChargeRows').innerHTML=''; $('addChargeRows').appendChild(renderChargeRow()); }
+    hideNoDiscountModal();
+    lastNoDiscountShown=false;
+    discountManual=false;
+    lastAutoDiscountPct=0;
+    // clear dates via flatpickr instances
+    $('checkin')._flatpickr?.clear();
+    $('checkout')._flatpickr?.clear();
+    recompute();
+  }
+
+  // Init
+  (function init(){
+    const opts = { altInput:true, altFormat:'d/m/Y', dateFormat:'Y-m-d', allowInput:true, onChange: recompute };
+    flatpickr('#checkin', opts);
+    flatpickr('#checkout', opts);
+
+    // Events
+    ['platform','pid','linenEach','cleanEach','lockCounts','linenCount','cleanCount','deepCleanOn','deepCleanAmt','discountOn','discountPct','bookingNote'].forEach(id=>{
+      $(id).addEventListener('input', recompute);
+      $(id).addEventListener('change', recompute);
+    });
+
+    // Live update booking note
+    $('bookingNote')?.addEventListener('input', recompute);
+    $('bookingNote')?.addEventListener('change', recompute);
+
+    // Gate until platform is selected
+    $('platform').addEventListener('change', ()=>{ setPlatformGate(); recompute(); });
+    // Rebuild email when hold-line checkbox changes
+    $('holdLine')?.addEventListener('change', recompute);
+
+    // Track manual discount edits
+    $('discountPct').addEventListener('input', ()=>{ discountManual = true; discountOverride = true; });
+    $('discountOn').addEventListener('change', ()=>{ discountOverride = true; recompute(); });
+
+
+
+// Paste handling: accept HTML tables (Teams) or convert TSV into a table for readability
+const pasteEl = $('modPaste');
+pasteEl.addEventListener('paste', (e)=>{
+  const cb = e.clipboardData;
+  if(!cb) return;
+  const htmlData = cb.getData('text/html');
+  let textData = cb.getData('text/plain');
+
+  // If HTML contains a table, keep it
+  if(htmlData && htmlData.toLowerCase().includes('<table')){
+    e.preventDefault();
+    document.execCommand('insertHTML', false, htmlData);
+    return;
+  }
+
+  // If it's tabular TSV, render as a table so it looks like Enterprise/Teams
+  if(textData && looksTabular(textData)){
+    e.preventDefault();
+    document.execCommand('insertHTML', false, textToTableHtml(textData));
+    return;
+  }
+
+  // Otherwise, allow normal paste (plain text / wrapped format)
+});
+
+    $('parse').addEventListener('click', ()=>{
+      const res = parseDailyModifiers(getPastePayload());
+      rateMap = res.map;
+      rateLoadedCount = res.count;
+      recompute();
+    });
+    $('clearPaste').addEventListener('click', ()=>{
+      $('modPaste').innerHTML='';
+      rateMap = {};
+      rateLoadedCount = 0;
+      $('parsed').textContent='0';
+    $('matchedInfo').textContent='';
+      recompute();
+    });
+
+    $('copyNote').addEventListener('click', ()=>robustCopy('noteHtml'));
+    $('copyEmail').addEventListener('click', ()=>robustCopy('emailText'));
+
+    $('reset').addEventListener('click', resetAll);
+
+    // Modal close
+    $('ltClose').addEventListener('click', hideNoDiscountModal);
+    $('noLtDiscountModal').addEventListener('click', (e)=>{ if(e.target === $('noLtDiscountModal')) hideNoDiscountModal(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') hideNoDiscountModal(); });
+
+    // Additional charges init
+    if($('addChargeRows') && $('addChargeRows').children.length===0){
+      $('addChargeRows').appendChild(renderChargeRow());
+    }
+    $('addChargeBtn')?.addEventListener('click', ()=>{
+      $('addChargeRows').appendChild(renderChargeRow());
+      recompute();
+    });
+
+    // First compute
+    recompute();
+    setPlatformGate();
+  })();
+</script><div class="flatpickr-calendar animate" tabindex="-1"><div class="flatpickr-months"><span class="flatpickr-prev-month"><svg version="1.1" viewbox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g></g><path d="M5.207 8.471l7.146 7.147-0.707 0.707-7.853-7.854 7.854-7.853 0.707 0.707-7.147 7.146z"></path></svg></span><div class="flatpickr-month"><div class="flatpickr-current-month"><select aria-label="Month" class="flatpickr-monthDropdown-months" tabindex="-1"><option class="flatpickr-monthDropdown-month" tabindex="-1" value="0">January</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="1">February</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="2">March</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="3">April</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="4">May</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="5">June</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="6">July</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="7">August</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="8">September</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="9">October</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="10">November</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="11">December</option></select><div class="numInputWrapper"><input aria-label="Year" class="numInput cur-year" tabindex="-1" type="number"/><span class="arrowUp"></span><span class="arrowDown"></span></div></div></div><span class="flatpickr-next-month"><svg version="1.1" viewbox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g></g><path d="M13.207 8.472l-7.854 7.854-0.707-0.707 7.146-7.146-7.146-7.148 0.707-0.707 7.854 7.854z"></path></svg></span></div><div class="flatpickr-innerContainer"><div class="flatpickr-rContainer"><div class="flatpickr-weekdays"><div class="flatpickr-weekdaycontainer">
+<span class="flatpickr-weekday">
+        Sun</span><span class="flatpickr-weekday">Mon</span><span class="flatpickr-weekday">Tue</span><span class="flatpickr-weekday">Wed</span><span class="flatpickr-weekday">Thu</span><span class="flatpickr-weekday">Fri</span><span class="flatpickr-weekday">Sat
+      </span>
+</div></div><div class="flatpickr-days" tabindex="-1"><div class="dayContainer"><span aria-label="February 1, 2026" class="flatpickr-day" tabindex="-1">1</span><span aria-label="February 2, 2026" class="flatpickr-day" tabindex="-1">2</span><span aria-label="February 3, 2026" class="flatpickr-day" tabindex="-1">3</span><span aria-label="February 4, 2026" class="flatpickr-day" tabindex="-1">4</span><span aria-label="February 5, 2026" class="flatpickr-day" tabindex="-1">5</span><span aria-label="February 6, 2026" class="flatpickr-day" tabindex="-1">6</span><span aria-label="February 7, 2026" class="flatpickr-day" tabindex="-1">7</span><span aria-label="February 8, 2026" class="flatpickr-day" tabindex="-1">8</span><span aria-label="February 9, 2026" class="flatpickr-day" tabindex="-1">9</span><span aria-label="February 10, 2026" class="flatpickr-day" tabindex="-1">10</span><span aria-label="February 11, 2026" class="flatpickr-day" tabindex="-1">11</span><span aria-label="February 12, 2026" class="flatpickr-day" tabindex="-1">12</span><span aria-current="date" aria-label="February 13, 2026" class="flatpickr-day today" tabindex="-1">13</span><span aria-label="February 14, 2026" class="flatpickr-day" tabindex="-1">14</span><span aria-label="February 15, 2026" class="flatpickr-day" tabindex="-1">15</span><span aria-label="February 16, 2026" class="flatpickr-day" tabindex="-1">16</span><span aria-label="February 17, 2026" class="flatpickr-day" tabindex="-1">17</span><span aria-label="February 18, 2026" class="flatpickr-day" tabindex="-1">18</span><span aria-label="February 19, 2026" class="flatpickr-day" tabindex="-1">19</span><span aria-label="February 20, 2026" class="flatpickr-day" tabindex="-1">20</span><span aria-label="February 21, 2026" class="flatpickr-day" tabindex="-1">21</span><span aria-label="February 22, 2026" class="flatpickr-day" tabindex="-1">22</span><span aria-label="February 23, 2026" class="flatpickr-day" tabindex="-1">23</span><span aria-label="February 24, 2026" class="flatpickr-day" tabindex="-1">24</span><span aria-label="February 25, 2026" class="flatpickr-day" tabindex="-1">25</span><span aria-label="February 26, 2026" class="flatpickr-day" tabindex="-1">26</span><span aria-label="February 27, 2026" class="flatpickr-day" tabindex="-1">27</span><span aria-label="February 28, 2026" class="flatpickr-day" tabindex="-1">28</span><span aria-label="March 1, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">1</span><span aria-label="March 2, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">2</span><span aria-label="March 3, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">3</span><span aria-label="March 4, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">4</span><span aria-label="March 5, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">5</span><span aria-label="March 6, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">6</span><span aria-label="March 7, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">7</span><span aria-label="March 8, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">8</span><span aria-label="March 9, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">9</span><span aria-label="March 10, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">10</span><span aria-label="March 11, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">11</span><span aria-label="March 12, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">12</span><span aria-label="March 13, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">13</span><span aria-label="March 14, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">14</span></div></div></div></div></div><div class="flatpickr-calendar animate" tabindex="-1"><div class="flatpickr-months"><span class="flatpickr-prev-month"><svg version="1.1" viewbox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g></g><path d="M5.207 8.471l7.146 7.147-0.707 0.707-7.853-7.854 7.854-7.853 0.707 0.707-7.147 7.146z"></path></svg></span><div class="flatpickr-month"><div class="flatpickr-current-month"><select aria-label="Month" class="flatpickr-monthDropdown-months" tabindex="-1"><option class="flatpickr-monthDropdown-month" tabindex="-1" value="0">January</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="1">February</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="2">March</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="3">April</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="4">May</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="5">June</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="6">July</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="7">August</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="8">September</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="9">October</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="10">November</option><option class="flatpickr-monthDropdown-month" tabindex="-1" value="11">December</option></select><div class="numInputWrapper"><input aria-label="Year" class="numInput cur-year" tabindex="-1" type="number"/><span class="arrowUp"></span><span class="arrowDown"></span></div></div></div><span class="flatpickr-next-month"><svg version="1.1" viewbox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g></g><path d="M13.207 8.472l-7.854 7.854-0.707-0.707 7.146-7.146-7.146-7.148 0.707-0.707 7.854 7.854z"></path></svg></span></div><div class="flatpickr-innerContainer"><div class="flatpickr-rContainer"><div class="flatpickr-weekdays"><div class="flatpickr-weekdaycontainer">
+<span class="flatpickr-weekday">
+        Sun</span><span class="flatpickr-weekday">Mon</span><span class="flatpickr-weekday">Tue</span><span class="flatpickr-weekday">Wed</span><span class="flatpickr-weekday">Thu</span><span class="flatpickr-weekday">Fri</span><span class="flatpickr-weekday">Sat
+      </span>
+</div></div><div class="flatpickr-days" tabindex="-1"><div class="dayContainer"><span aria-label="February 1, 2026" class="flatpickr-day" tabindex="-1">1</span><span aria-label="February 2, 2026" class="flatpickr-day" tabindex="-1">2</span><span aria-label="February 3, 2026" class="flatpickr-day" tabindex="-1">3</span><span aria-label="February 4, 2026" class="flatpickr-day" tabindex="-1">4</span><span aria-label="February 5, 2026" class="flatpickr-day" tabindex="-1">5</span><span aria-label="February 6, 2026" class="flatpickr-day" tabindex="-1">6</span><span aria-label="February 7, 2026" class="flatpickr-day" tabindex="-1">7</span><span aria-label="February 8, 2026" class="flatpickr-day" tabindex="-1">8</span><span aria-label="February 9, 2026" class="flatpickr-day" tabindex="-1">9</span><span aria-label="February 10, 2026" class="flatpickr-day" tabindex="-1">10</span><span aria-label="February 11, 2026" class="flatpickr-day" tabindex="-1">11</span><span aria-label="February 12, 2026" class="flatpickr-day" tabindex="-1">12</span><span aria-current="date" aria-label="February 13, 2026" class="flatpickr-day today" tabindex="-1">13</span><span aria-label="February 14, 2026" class="flatpickr-day" tabindex="-1">14</span><span aria-label="February 15, 2026" class="flatpickr-day" tabindex="-1">15</span><span aria-label="February 16, 2026" class="flatpickr-day" tabindex="-1">16</span><span aria-label="February 17, 2026" class="flatpickr-day" tabindex="-1">17</span><span aria-label="February 18, 2026" class="flatpickr-day" tabindex="-1">18</span><span aria-label="February 19, 2026" class="flatpickr-day" tabindex="-1">19</span><span aria-label="February 20, 2026" class="flatpickr-day" tabindex="-1">20</span><span aria-label="February 21, 2026" class="flatpickr-day" tabindex="-1">21</span><span aria-label="February 22, 2026" class="flatpickr-day" tabindex="-1">22</span><span aria-label="February 23, 2026" class="flatpickr-day" tabindex="-1">23</span><span aria-label="February 24, 2026" class="flatpickr-day" tabindex="-1">24</span><span aria-label="February 25, 2026" class="flatpickr-day" tabindex="-1">25</span><span aria-label="February 26, 2026" class="flatpickr-day" tabindex="-1">26</span><span aria-label="February 27, 2026" class="flatpickr-day" tabindex="-1">27</span><span aria-label="February 28, 2026" class="flatpickr-day" tabindex="-1">28</span><span aria-label="March 1, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">1</span><span aria-label="March 2, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">2</span><span aria-label="March 3, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">3</span><span aria-label="March 4, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">4</span><span aria-label="March 5, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">5</span><span aria-label="March 6, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">6</span><span aria-label="March 7, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">7</span><span aria-label="March 8, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">8</span><span aria-label="March 9, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">9</span><span aria-label="March 10, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">10</span><span aria-label="March 11, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">11</span><span aria-label="March 12, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">12</span><span aria-label="March 13, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">13</span><span aria-label="March 14, 2026" class="flatpickr-day nextMonthDay" tabindex="-1">14</span></div></div></div></div></div>
+<protonpass-root-996a data-protonpass-role="root" data-protonpass-theme="dark"><template shadowrootmode="closed"></template></protonpass-root-996a></body></html>
