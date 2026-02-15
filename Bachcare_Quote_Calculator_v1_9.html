@@ -570,12 +570,14 @@ function parseDailyModifiers(payload){
     const {
       platformLabel, platformMarkupPct,
       pid, bookingNote, checkin, checkout, nights,
-      rentBeforeC, discountC, rentUsedC,
+      rentBeforeC, discountPct, discountC, rentUsedC,
       gstC, gelC, feeC, markupC,
       linenTotalC, cleanTotalC, deepCleanC, totalC,
       additionalChargesItems, additionalChargesTotalC,
       longTerm, bookingSplits
     } = payload;
+
+    const safeDiscountPct = (Number.isFinite(discountPct) ? discountPct : (parseFloat($('discountPct')?.value||'0')||0));
 
     const channelText = `${platformLabel || '-'} (Markup ${((platformMarkupPct||0)).toFixed(1)}%)`;
 
@@ -595,7 +597,7 @@ function parseDailyModifiers(payload){
       `<br>`+
       `Check-in: ${checkin} &nbsp;|&nbsp; Check-out: ${checkout} &nbsp;|&nbsp; Nights: ${nights}<br>`+
       `Rent Before Discount: ${nzd(rentBeforeC)}<br>`+
-      `Rent Discount (${Math.round(discountPct)}%): ${(discountC>0)?('-'+nzd(discountC)):nzd(0)}<br>`+
+      `Rent Discount (${Math.round(safeDiscountPct)}%): ${(discountC>0)?('-'+nzd(discountC)):nzd(0)}<br>`+
       `Rent Including Discount: ${nzd(rentUsedC)}<br>`+
       `Linen: ${nzd(linenTotalC)}<br>`+
       `Cleaning: ${nzd(cleanTotalC)}<br>`+
@@ -843,6 +845,7 @@ The Bachcare Support Team`;
       checkout: checkoutTxt,
       nights,
       rentBeforeC,
+      discountPct,
       discountC,
       rentUsedC,
       gstC,
